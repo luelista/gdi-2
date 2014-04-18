@@ -26,10 +26,21 @@ public class SortingItem implements Comparable<SortingItem> {
 
 	// You may add additional methods here
 
+    /**
+     * concatenates relevant values to form a sorting key
+     * @return the sort key
+     */
 	public String getSortKey() {
 		return this.BookSerialNumber + ";" + this.ReaderID;
 	}
-	
+
+    /**
+     * compares this instance to another instance of SortingItem by their `sortKey`s
+     * @param b the other instance
+     * @return value < 0 if this instance is lower,
+     *         value = 0 if instances are equivalent with respect to `sortKey`s,
+     *         value > 0 if this instance is higher
+     */
 	public int compareTo(SortingItem b) {
 		return this.getSortKey().compareTo(b.getSortKey());
 	}

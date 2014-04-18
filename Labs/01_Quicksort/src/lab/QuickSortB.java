@@ -19,30 +19,23 @@ public class QuickSortB extends QuickSort {
 	@Override
 	public void Quicksort(SortArray records, int left, int right) {
 		SortingItem a = records.getElementAt(left), b = records.getElementAt((left+right)/2), c = records.getElementAt(right);
-		qshelper(records, left, right, median(a,b,c));
-		
-		int _from = from, _to = to;
+
+        qshelper(records, left, right, median(a,b,c));
+		int _from = from, _to = to; //Store result locally as member fields will change
+
 		if (left < _to) this.Quicksort(records, left, _to);
 		if (_from < right) this.Quicksort(records, _from, right);
 	}
 
 	// You may add additional methods here
 
+    /**
+     * Determine the median of three `SortingItem`s
+     * @return the median element
+     */
 	public SortingItem median(SortingItem a, SortingItem b, SortingItem c) {
-		if (a.compareTo(b) > 0)
-			if (b.compareTo(c) > 0)
-				return b;
-			else if (a.compareTo(c) > 0)
-				return c;
-			else
-				return a;
-		else
-			if (a.compareTo(c) > 0)
-				return a;
-			else if (b.compareTo(c) > 0)
-				return c;
-			else
-				return b;
+		if (a.compareTo(b) > 0) return (b.compareTo(c) > 0) ? b : (a.compareTo(c) > 0) ? c : a;
+		else return (a.compareTo(c) > 0) ? a : (b.compareTo(c) > 0) ? c : b;
 	}
 	
 }
