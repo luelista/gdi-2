@@ -194,6 +194,7 @@ public class AllTests extends TestCase {
 
 		for (int file = 0; file < NrOfTestFiles; file++) {
 
+			System.out.println("QuicksortA [" + inputFiles[file]);
 			// modified
 			records = SortingLab.readFile(inputFiles[file]);
 			SortingLab.QuicksortA(records, 0, records.getNumberOfItems() - 1);

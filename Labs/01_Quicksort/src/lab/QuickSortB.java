@@ -18,12 +18,31 @@ public class QuickSortB extends QuickSort {
 	 */
 	@Override
 	public void Quicksort(SortArray records, int left, int right) {
-		// TODO
-		// implement the Quicksort B algorithm to sort the records
-		// (choose the pivot as the median value of the elements at position
-		// (left (first),middle,right(last)))
+		SortingItem a = records.getElementAt(left), b = records.getElementAt((left+right)/2), c = records.getElementAt(right);
+		qshelper(records, left, right, median(a,b,c));
+		
+		int _from = from, _to = to;
+		if (left < _to) this.Quicksort(records, left, _to);
+		if (_from < right) this.Quicksort(records, _from, right);
 	}
 
 	// You may add additional methods here
 
+	public SortingItem median(SortingItem a, SortingItem b, SortingItem c) {
+		if (a.compareTo(b) > 0)
+			if (b.compareTo(c) > 0)
+				return b;
+			else if (a.compareTo(c) > 0)
+				return c;
+			else
+				return a;
+		else
+			if (a.compareTo(c) > 0)
+				return a;
+			else if (b.compareTo(c) > 0)
+				return c;
+			else
+				return b;
+	}
+	
 }
