@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Labs/02_Navigation/Dijkstra.iml" filepath="$PROJECT_DIR$/Labs/02_Navigation/Dijkstra.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Labs/01_Quicksort/QuickSort.iml" filepath="$PROJECT_DIR$/Labs/01_Quicksort/QuickSort.iml" />
+    </modules>
+  </component>
+</project>
+

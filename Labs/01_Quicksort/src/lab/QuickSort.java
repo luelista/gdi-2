@@ -9,12 +9,13 @@ import frame.SortArray;
  */
 public abstract class QuickSort {
 
-	protected int from, to;
-	
 	// DO NOT modify this method
 	public abstract void Quicksort(SortArray records, int left, int right);
 
 	// You may add additional methods here
+
+    // Return values of qshelper
+    protected int from, to;
 
     /**
      * Helper method for the quicksort algorithm. This is where the actual work of determining which items to swap
@@ -31,11 +32,14 @@ public abstract class QuickSort {
             // find the first item between "from" and "right" which is higher than pivot
 			for (; from < right; from++)
                 if (itemComp(records.getElementAt(from), pivot) >= 0) break;
+
             // find the first item going from "to" downto "left" which is lower than pivot
 			for (; to > left; to--)
                 if (itemComp(records.getElementAt(to), pivot) <= 0) break;
-			if (from <= to) { swap(records, from, to); from++; to--; }
+
+            if (from <= to) { swap(records, from, to); from++; to--; }
 		}
+        // from and to are 'returned' as fields
 	}
 
     /**

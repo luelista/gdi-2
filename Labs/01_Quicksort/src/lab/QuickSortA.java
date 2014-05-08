@@ -18,11 +18,14 @@ public class QuickSortA extends QuickSort {
 	 */
 	@Override
 	public void Quicksort(SortArray records, int left, int right) {
+        if (left >= right) return;
 		qshelper(records, left, right, records.getElementAt(left));
 		int _from = from, _to = to; //Store result locally as member fields will change
 
-        if (left < _to) this.Quicksort(records, left, _to);
-		if (_from < right) this.Quicksort(records, _from, right);
+        //if (left < _to)
+            this.Quicksort(records, left, _to);
+		//if (_from < right)
+            this.Quicksort(records, _from, right);
 	}
 
 	// You may add additional methods here
