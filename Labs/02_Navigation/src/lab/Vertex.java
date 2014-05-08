@@ -38,7 +38,7 @@ public class Vertex {
 
     @Override
     public String toString() {
-        return String.format("%s: [label=\"%s,%d\"]", this.name, this.label, this.waitingTime);
+        return String.format("%s [label=\"%s,%d\"];", this.name, this.label, this.waitingTime);
     }
 
     public String toDebugString() {

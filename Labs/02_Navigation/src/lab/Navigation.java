@@ -1,7 +1,6 @@
 package lab;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.*;
 
@@ -24,6 +23,8 @@ public class Navigation {
     public Hashtable<String, Vertex> vertices = new Hashtable<String, Vertex>();
     public ArrayList<Edge> edges = new ArrayList<Edge>();
 
+    public String filename;
+
 	/**
 	 * The constructor takes a filename as input, it reads that file and fill
 	 * the nodes and edges Lists with corresponding node and edge objects
@@ -32,6 +33,7 @@ public class Navigation {
 	 *            name of the file containing the input map
 	 */
 	public Navigation(String filename) {
+        this.filename = filename;
         try {
             this.readFromFile(filename);
         } catch (ParseException e) {
@@ -75,6 +77,19 @@ public class Navigation {
         }
     }
 
+    public ArrayList<String> toDotFile() {
+        ArrayList<String> s = new ArrayList<>();
+        s.add("Digraph {");
+        for(Edge e:this.edges) {
+            s.add(e.toString());
+        }
+        for(Vertex v:this.vertices.values()) {
+            s.add(v.toString());
+        }
+        s.add("}");
+        return s;
+    }
+
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
@@ -98,31 +113,25 @@ public class Navigation {
         return s.toString();
     }
 
-    public static void main(String[] args) throws Exception {
-        System.out.println(System.getProperty("user.dir"));
-
-        Navigation n = new Navigation("Labs/02_Navigation/testfile1.txt");
-        System.out.println(n.toDebugString());
-
-        System.out.println(n.findShortestRoute("A", "D"));
-    }
-
-
 
     public Hashtable<String, String> dijkstra(String startNode, Edge.EdgeMapper mapper) {
-        final Hashtable<String, Double> abstand = new Hashtable<>();
+        // declare and initialize temporary tables and lists
+        Hashtable<String, Double> abstand = new Hashtable<>();
         Hashtable<String, String> vorgaenger = new Hashtable<>();
-        PriorityQueue<Vertex> Q = new PriorityQueue<>(1, new Comparator<Vertex>() {
-            @Override
-            public int compare(Vertex o1, Vertex o2) {
-                return (int)(abstand.get(o1.name) - abstand.get(o2.name));
-            }
-        });
+        ArrayList<Vertex> Q = new ArrayList<>(this.vertices.size());
 
-        this.initDijkstra(startNode, abstand, vorgaenger, Q);
+        // fill in default distances of infinity, add all vertices to list of remaining vertices (Q)
+        for(Vertex v: this.vertices.values()) {
+            abstand.put(v.name, Double.POSITIVE_INFINITY);
+            Q.add(v);
+        }
+        // start node always has distance 0, of course
+        abstand.put(startNode, 0.0);
 
-        while(! Q.isEmpty()) {
-            Vertex u = Q.poll();
+        while(Q.size() >= 1) {
+            Vertex u = dijkstraPriority(abstand, Q);
+            Q.remove(u);
+            System.out.println("Taken "+u.name+" from Q ("+abstand.get(u.name) + ")");
             for(Edge e: u.edgesFromHere) {
                 Vertex v = this.vertices.get(e.to);
                 if (Q.contains(v)) {
@@ -143,16 +152,18 @@ public class Navigation {
  8                 distanz_update(u,v,abstand[],vorgänger[])   // prüfe Abstand vom Startknoten zu v
  9      return vorgänger[]
  */
-    public void initDijkstra(String startNode, Hashtable<String, Double> abstand, Hashtable<String, String> vorgaenger, PriorityQueue<Vertex> Q) {
-        for(Vertex v: this.vertices.values()) {
-            abstand.put(v.name, Double.POSITIVE_INFINITY);
-            //vorgaenger.put(v.name, null);
-            Q.add(v);
+    private void dijkstraInit(String startNode, Hashtable<String, Double> abstand, Hashtable<String, String> vorgaenger, ArrayList<Vertex> Q) {
+
+    }
+
+    private Vertex dijkstraPriority(Hashtable<String, Double> abstand, ArrayList<Vertex> Q) {
+        Vertex minVertex = null; double min = Double.POSITIVE_INFINITY;
+        for(Vertex v : Q) {
+            if (abstand.get(v.name) < min || minVertex == null) {
+                minVertex = v; min = abstand.get(v.name);
+            }
         }
-        //reset boldness
-        for(Edge e : this.edges)
-            e.bold = false;
-        abstand.put(startNode, 0.0);
+        return minVertex;
     }
 
 /*
@@ -166,11 +177,56 @@ public class Navigation {
                                         Hashtable<String, Double> abstand,
                                         Hashtable<String, String> vorgaenger,
                                         Edge.EdgeMapper mapper) {
-        double alternativ = abstand.get(u.name) + mapper.map(u.getEdgeTo(v.name));
+        double alternativ = abstand.get(u.name) + mapper.mapVertex(u) + mapper.map(u.getEdgeTo(v.name));
+        System.out.println("u = [" + u + "], v = [" + v + "], alternativ = [" + alternativ + "], abstand = [" + abstand.get(v.name) + "],");
         if (alternativ < abstand.get(v.name)) {
             abstand.put(v.name, alternativ);
             vorgaenger.put(v.name, u.name);
         }
+    }
+
+    public void routeMakeBold(Hashtable<String, String> way, String endNode) {
+        //reset boldness
+        for(Edge e : this.edges)
+            e.bold = false;
+
+        String u = endNode, v;
+        while (way.get(u) != null) {
+            v = way.get(u);
+            System.out.printf("%s -> %s\n", v, u);
+            this.vertices.get(v).getEdgeTo(u).bold = true;
+            u = v;
+
+            //result.add(0, u);
+        }
+    }
+
+    public int routeCalculateSum(Hashtable<String, String> way, String startNode, String endNode, Edge.EdgeMapper mapper) {
+        // check for non-existing nodes
+        if (! this.vertices.containsKey(startNode)) return SOURCE_NOT_FOUND;
+        if (! this.vertices.containsKey(endNode)) return DESTINATION_NOT_FOUND;
+        if ((! this.vertices.containsKey(startNode)) && (! this.vertices.containsKey(endNode))) return SOURCE_DESTINATION_NOT_FOUND;
+
+        // go through the path starting at end node
+        double sum = 0.0;
+        String u = endNode, v;
+        while (way.get(u) != null) {
+            // get the preceding node of the current node
+            v = way.get(u);
+            System.out.printf("%s -> %s\n", v, u);
+            // retrieve the edge connecting the preceding node (v) and the current node (u)
+            Edge e = this.vertices.get(v).getEdgeTo(u);
+            // map the edge to a distance
+            sum += mapper.map(e);
+            u = v;
+            // map the node to a additional distance (ignore on final iteration as per 2.2)
+            if (!u.equals(startNode)) sum += mapper.mapVertex(this.vertices.get(v));
+            //result.add(0, u);
+        }
+        // if start node was not reached, return error code
+        if (u.equals(startNode) == false) return NO_PATH;
+
+        return (int)Math.ceil(sum);
     }
 
 	/**
@@ -195,22 +251,13 @@ public class Navigation {
 	 *         returned.
 	 */
 	public ArrayList<String> findShortestRoute(String A, String B) {
+        System.out.printf("\n%s: shortest %s -> %s\n", this.filename, A, B);
         Hashtable<String, String> vorgaenger;
         vorgaenger = dijkstra(A, new Edge.DistanceMapper());
 
-        //ArrayList<String> result = new ArrayList<>();
-        //result.add(B);
-        String u = B, v;
-        while (vorgaenger.get(u) != null) {
-            v = vorgaenger.get(u);
-            System.out.printf("%s -> %s\n", v, u);
-            this.vertices.get(v).getEdgeTo(u).bold = true;
-            u = v;
+        this.routeMakeBold(vorgaenger, B);
 
-            //result.add(0, u);
-        }
-
-        return Max.stringArrayToArrayList(this.toString().split("\n"));
+        return this.toDotFile();
 	}
 
 	/**
@@ -235,22 +282,13 @@ public class Navigation {
 	 *         returned.
 	 */
 	public ArrayList<String> findFastestRoute(String A, String B) {
+        System.out.printf("\n%s: fastest %s -> %s\n", this.filename, A, B);
         Hashtable<String, String> vorgaenger;
         vorgaenger = dijkstra(A, new Edge.SpeedMapper());
 
-        //ArrayList<String> result = new ArrayList<>();
-        //result.add(B);
-        String u = B, v;
-        while (vorgaenger.get(u) != null) {
-            v = vorgaenger.get(u);
-            System.out.printf("%s -> %s\n", v, u);
-            this.vertices.get(v).getEdgeTo(u).bold = true;
-            u = v;
+        this.routeMakeBold(vorgaenger, B);
 
-            //result.add(0, u);
-        }
-
-        return Max.stringArrayToArrayList(this.toString().split("\n"));
+        return this.toDotFile();
 	}
 
 	/**
@@ -269,18 +307,19 @@ public class Navigation {
 	 *         B
 	 */
 	public int findShortestDistance(String A, String B) {
-		//TODO Add you code here
-		int sd = 0; 
+        System.out.printf("\n%s: shortest %s -> %s\n", this.filename, A, B);
+        Hashtable<String, String> vorgaenger;
+        vorgaenger = dijkstra(A, new Edge.DistanceMapper());
 
-		return sd;
+        return this.routeCalculateSum(vorgaenger, A, B, new Edge.DistanceMapper());
 	}
 
 	/**
 	 * Find the fastest route between A and B using the dijkstra algorithm.
 	 * 
-	 * @param A
+	 * @param pointA
 	 *            Source
-	 * @param B
+	 * @param pointB
 	 *            Destination
 	 * @return the fastest time in minutes rounded upwards. SOURCE_NOT_FOUND if
 	 *         point A is not on the map DESTINATION_NOT_FOUND if point B is not
@@ -289,10 +328,11 @@ public class Navigation {
 	 *         A and point B
 	 */
 	public int findFastestTime(String pointA, String pointB) {
-		//TODO Add you code here
-		int ft = 0;
+        System.out.printf("\n%s: fastest %s -> %s\n", this.filename, pointA, pointB);
+        Hashtable<String, String> vorgaenger;
+        vorgaenger = dijkstra(pointA, new Edge.SpeedMapper());
 
-		return ft;
+        return this.routeCalculateSum(vorgaenger, pointA, pointB, new Edge.SpeedMapper());
 	}
 
 }

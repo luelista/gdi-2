@@ -37,7 +37,7 @@ public class Edge {
 
     @Override
     public String toString() {
-        return String.format("%s -> %s: [label=\"%d,%d\"]%s", this.from, this.to, this.distance, this.speedLimit, this.bold ? "[style=bold]" : "");
+        return String.format("%s -> %s [label=\"%d,%d\"]%s;", this.from, this.to, this.distance, this.speedLimit, this.bold ? "[style=bold]" : "");
     }
 
     public String toDebugString() {
@@ -46,20 +46,25 @@ public class Edge {
 
 
     public interface EdgeMapper {
-        public int map(Edge e);
+        public double map(Edge e);
+        public double mapVertex(Vertex v);
     }
 
     public static class DistanceMapper implements EdgeMapper {
         @Override
-        public int map(Edge e) {
+        public double map(Edge e) {
             return e.distance;
         }
+
+        @Override
+        public double mapVertex(Vertex v) { return 0; }
     }
     public static class SpeedMapper implements EdgeMapper {
         @Override
-        public int map(Edge e) {
-            return e.speedLimit;
-        }
+        public double map(Edge e) { return ((double)e.distance) / (double)e.speedLimit * 60; }
+
+        @Override
+        public double mapVertex(Vertex v) { return v.waitingTime; }
     }
 
 }

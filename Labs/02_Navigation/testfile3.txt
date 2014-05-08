@@ -1,0 +1,8 @@
+Digraph {
+A -> B [label="3,100"];
+B -> C [label="4,80"];
+A -> C [label="7,50"];
+A [label="A,0"];
+B [label="B,999"];
+C [label="C,30000"];
+}
