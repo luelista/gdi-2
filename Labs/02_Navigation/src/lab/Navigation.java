@@ -14,12 +14,18 @@ public class Navigation {
 	 * not on the map -3 if both source and destination points are not on the
 	 * map -4 if no path can be found between source and destination
 	 */
-
+  
 	public static final int SOURCE_NOT_FOUND = -1;
 	public static final int DESTINATION_NOT_FOUND = -2;
 	public static final int SOURCE_DESTINATION_NOT_FOUND = -3;
 	public static final int NO_PATH = -4;
 
+    /**
+     * whether debug messages should be sent to stdout
+     */
+    public static final boolean DO_DEBUG = false;
+  
+  
     public Hashtable<String, Vertex> vertices = new Hashtable<String, Vertex>();
     public ArrayList<Edge> edges = new ArrayList<Edge>();
 
@@ -43,6 +49,13 @@ public class Navigation {
         }
 	}
 
+    /**
+     * reads a dotfile at the specified location, creates Edge and Vertex objects
+     * accordingly, and stores them to member variables
+     * @param filename     file in Dot format to read
+     * @throws Exception  IOExceptions for problems reading the file,
+     * ParseExceptions from Vertex and Edge constructors for problems parsing the file
+     */
     public void readFromFile(String filename) throws Exception {
         InputStreamReader isr = new InputStreamReader(new FileInputStream(filename));
         Scanner s = new Scanner(isr);
@@ -77,6 +90,10 @@ public class Navigation {
         }
     }
 
+    /**
+     * convert to Dotfile syntax
+     * @return lines of the Dot file
+     */
     public ArrayList<String> toDotFile() {
         ArrayList<String> s = new ArrayList<>();
         s.add("Digraph {");
@@ -90,6 +107,10 @@ public class Navigation {
         return s;
     }
 
+    /**
+     * convert to dotfile syntax, without Graph type
+     * @return dot file as single string
+     */
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
@@ -102,6 +123,9 @@ public class Navigation {
         return s.toString();
     }
 
+    /**
+     * produces a longer string representation of this graph, useful for debugging purposes
+     */
     public String toDebugString() {
         StringBuilder s = new StringBuilder();
         for(Edge e:this.edges) {
@@ -113,7 +137,13 @@ public class Navigation {
         return s.toString();
     }
 
-
+    /**
+     * the main Dijkstra algorithm. this method uses the member variables vertices and edges
+     * @param startNode   start node Q_0 for algorithm
+     * @param mapper  an instance of a class implementing the EdgeMapper interface which allows
+     *                mapping edges and vertices to their weights
+     * @return the 'previous nodes' hash array
+     */
     public Hashtable<String, String> dijkstra(String startNode, Edge.EdgeMapper mapper) {
         // declare and initialize temporary tables and lists
         Hashtable<String, Double> abstand = new Hashtable<>();
@@ -141,18 +171,14 @@ public class Navigation {
         }
         return vorgaenger;
     }
-/*
- 1  Funktion Dijkstra(Graph, Startknoten):
- 2      initialisiere(Graph,Startknoten,abstand[],vorgänger[],Q)
- 3      solange Q nicht leer:                       // Der eigentliche Algorithmus
- 4          u := Knoten in Q mit kleinstem Wert in abstand[]
- 5          entferne u aus Q                                // für u ist der kürzeste Weg nun bestimmt
- 6          für jeden Nachbarn v von u:
- 7              falls v in Q:
- 8                 distanz_update(u,v,abstand[],vorgänger[])   // prüfe Abstand vom Startknoten zu v
- 9      return vorgänger[]
- */
 
+    /**
+     * determine the vertex from Q with the lowest rank in 'abstand'
+     * @see java.util.PriorityQueue (was not used because priority needs to be updated)
+     * @param abstand   ranking hash table
+     * @param Q         the priority queue, represented as an arraylist
+     * @return          lowest ranked vertex
+     */
     private Vertex priorityExtractMin(Hashtable<String, Double> abstand, ArrayList<Vertex> Q) {
         Vertex minVertex = null; double min = Double.POSITIVE_INFINITY;
         for(Vertex v : Q) {
@@ -163,13 +189,15 @@ public class Navigation {
         return minVertex;
     }
 
-/*
- 1  Methode distanz_update(u,v,abstand[],vorgänger[]):
- 2      alternativ := abstand[u] + abstand_zwischen(u, v)   // Weglänge vom Startknoten nach v über u
- 3      falls alternativ < abstand[v]:
- 4          abstand[v] := alternativ
- 5          vorgänger[v] := u
- */
+    /**
+     * updates the distance if neccessary. part of dijkstra algorithm
+     * @param u             first vertex
+     * @param v             second vertex
+     * @param abstand       ranking hash table, to be updated
+     * @param vorgaenger    previous nodes, to be updated
+     * @param mapper        an instance of a class implementing the EdgeMapper interface which allows
+     *                      mapping edges and vertices to their weights
+     */
     private void dijkstraUpdateDistance(Vertex u, Vertex v,
                                         Hashtable<String, Double> abstand,
                                         Hashtable<String, String> vorgaenger,
@@ -182,6 +210,12 @@ public class Navigation {
         }
     }
 
+    /**
+     * set the 'bold' property for all nodes on the path to endNode according to a
+     * given hash of previous nodes
+     * @param way   the path, usually calculated from dijkstra's algo
+     * @param endNode   end node
+     */
     public void routeMakeBold(Hashtable<String, String> way, String endNode) {
         //reset boldness
         for(Edge e : this.edges)
@@ -197,12 +231,21 @@ public class Navigation {
         }
     }
 
+    /**
+     * sum the distance ranks along a path given by a hash of previous nodes, a start node, and an end node
+     * @param way          the path, usually calculated from dijkstra's algo
+     * @param startNode    the start node
+     * @param endNode      end node
+     * @param mapper       an instance of a class implementing the EdgeMapper interface which allows
+     *                     mapping edges and vertices to their weights
+     * @return the calculated sum
+     */
     public int routeCalculateSum(Hashtable<String, String> way, String startNode, String endNode, Edge.EdgeMapper mapper) {
         // check for non-existing nodes
+        if ((! this.vertices.containsKey(startNode)) && (! this.vertices.containsKey(endNode))) return SOURCE_DESTINATION_NOT_FOUND;
         if (! this.vertices.containsKey(startNode)) return SOURCE_NOT_FOUND;
         if (! this.vertices.containsKey(endNode)) return DESTINATION_NOT_FOUND;
-        if ((! this.vertices.containsKey(startNode)) && (! this.vertices.containsKey(endNode))) return SOURCE_DESTINATION_NOT_FOUND;
-
+        
         // go through the path starting at end node
         double sum = 0.0;
         String u = endNode, v;

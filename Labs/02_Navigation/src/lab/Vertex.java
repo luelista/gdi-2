@@ -5,14 +5,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created 08.05.14 09:49.
+ * Representation of a vertex in a dot file
  *
  * @author Max Weller
  * @version 2014-05-08-001
  */
 public class Vertex {
     //private final Pattern dotPattern = Pattern.compile("^([A-Z]+): \\[label=\"([^\"]+)\"\\];$");
-    private final Pattern dotPattern = Pattern.compile("^([A-Z]+) \\[label=\"([A-Z]+),([0-9]+)\"\\];$");
+    private final Pattern dotPattern = Pattern.compile("^(\\w+) \\[label=\"(\\w+),([0-9]+)\"\\];$");
 
     public String name, label;
     public int waitingTime;
@@ -29,6 +29,11 @@ public class Vertex {
         }
     }
 
+    /**
+     * returns the edge from this vertex to another vertex determined by its name if any, null otherwise
+     * @param vertexName  name of the destination vertex
+     * @return the edge if existing, null otherwise
+     */
     public Edge getEdgeTo(String vertexName) {
         for(Edge e: this.edgesFromHere) {
             if (e.to.equals(vertexName)) return e;

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
+ * some test methods and helper methods
  * Created 08.05.14 11:12.
  *
  * @author Max Weller
@@ -13,12 +14,24 @@ import java.util.ArrayList;
  */
 public class Max {
 
+    /**
+     * convert a string array to an arraylist<string>
+     * @param a the string array
+     * @return the array list
+     */
     public static ArrayList<String> stringArrayToArrayList(String[] a) {
         ArrayList<String> l = new ArrayList<>(a.length);
         for (String s : a) l.add(s);
         return l;
     }
 
+    /**
+     * join all items of an arraylist together
+     * note: the joint is also added after the last element
+     * @param joint  string to insert between elements
+     * @param a the array list
+     * @return the joined string
+     */
     public static String joinArrayListOfString(String joint, ArrayList<String> a) {
         StringBuilder builder = new StringBuilder();
         for (String s : a) {
@@ -28,6 +41,11 @@ public class Max {
         return builder.toString();
     }
 
+    /**
+     * write a string to a text file
+     * @param filename file to write to
+     * @param content string to write
+     */
     public static void filePutContents(String filename, String content) {
         try {
 
@@ -42,7 +60,9 @@ public class Max {
         }
     }
 
-
+    /**
+     * some tests
+     */
     public static void main(String[] args) throws Exception {
         System.out.println(System.getProperty("user.dir"));
 

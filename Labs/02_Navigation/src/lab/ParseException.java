@@ -1,7 +1,7 @@
 package lab;
 
 /**
- * Created 08.05.14 10:00.
+ * Thrown on syntax errors in Dot files
  *
  * @author Max Weller
  * @version 2014-05-08-001
