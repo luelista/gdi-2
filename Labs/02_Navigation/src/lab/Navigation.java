@@ -129,7 +129,7 @@ public class Navigation {
         abstand.put(startNode, 0.0);
 
         while(Q.size() >= 1) {
-            Vertex u = dijkstraPriority(abstand, Q);
+            Vertex u = priorityExtractMin(abstand, Q);
             Q.remove(u);
             System.out.println("Taken "+u.name+" from Q ("+abstand.get(u.name) + ")");
             for(Edge e: u.edgesFromHere) {
@@ -152,11 +152,8 @@ public class Navigation {
  8                 distanz_update(u,v,abstand[],vorgänger[])   // prüfe Abstand vom Startknoten zu v
  9      return vorgänger[]
  */
-    private void dijkstraInit(String startNode, Hashtable<String, Double> abstand, Hashtable<String, String> vorgaenger, ArrayList<Vertex> Q) {
 
-    }
-
-    private Vertex dijkstraPriority(Hashtable<String, Double> abstand, ArrayList<Vertex> Q) {
+    private Vertex priorityExtractMin(Hashtable<String, Double> abstand, ArrayList<Vertex> Q) {
         Vertex minVertex = null; double min = Double.POSITIVE_INFINITY;
         for(Vertex v : Q) {
             if (abstand.get(v.name) < min || minVertex == null) {
@@ -177,10 +174,10 @@ public class Navigation {
                                         Hashtable<String, Double> abstand,
                                         Hashtable<String, String> vorgaenger,
                                         Edge.EdgeMapper mapper) {
-        double alternativ = abstand.get(u.name) + mapper.mapVertex(u) + mapper.map(u.getEdgeTo(v.name));
-        System.out.println("u = [" + u + "], v = [" + v + "], alternativ = [" + alternativ + "], abstand = [" + abstand.get(v.name) + "],");
-        if (alternativ < abstand.get(v.name)) {
-            abstand.put(v.name, alternativ);
+        double altDist = abstand.get(u.name) + mapper.mapVertex(u) + mapper.map(u.getEdgeTo(v.name));
+        System.out.println("u = [" + u + "], v = [" + v + "], altDist = [" + altDist + "], abstand = [" + abstand.get(v.name) + "],");
+        if (altDist < abstand.get(v.name)) {
+            abstand.put(v.name, altDist);
             vorgaenger.put(v.name, u.name);
         }
     }
@@ -196,7 +193,6 @@ public class Navigation {
             System.out.printf("%s -> %s\n", v, u);
             this.vertices.get(v).getEdgeTo(u).bold = true;
             u = v;
-
             //result.add(0, u);
         }
     }
