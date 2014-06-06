@@ -104,6 +104,7 @@ public class Navigation {
             s.add(v.toString());
         }
         s.add("}");
+        if (DO_DEBUG) System.out.println(Max.joinArrayListOfString("\n", s));
         return s;
     }
 
@@ -161,7 +162,7 @@ public class Navigation {
         while(Q.size() >= 1) {
             Vertex u = priorityExtractMin(abstand, Q);
             Q.remove(u);
-            System.out.println("Taken "+u.name+" from Q ("+abstand.get(u.name) + ")");
+            if (DO_DEBUG) System.out.println("Taken "+u.name+" from Q ("+abstand.get(u.name) + ")");
             for(Edge e: u.edgesFromHere) {
                 Vertex v = this.vertices.get(e.to);
                 if (Q.contains(v)) {
@@ -203,7 +204,7 @@ public class Navigation {
                                         Hashtable<String, String> vorgaenger,
                                         Edge.EdgeMapper mapper) {
         double altDist = abstand.get(u.name) + mapper.mapVertex(u) + mapper.map(u.getEdgeTo(v.name));
-        System.out.println("u = [" + u + "], v = [" + v + "], altDist = [" + altDist + "], abstand = [" + abstand.get(v.name) + "],");
+        if (DO_DEBUG) System.out.println("u = [" + u + "], v = [" + v + "], altDist = [" + altDist + "], abstand = [" + abstand.get(v.name) + "],");
         if (altDist < abstand.get(v.name)) {
             abstand.put(v.name, altDist);
             vorgaenger.put(v.name, u.name);
@@ -224,7 +225,7 @@ public class Navigation {
         String u = endNode, v;
         while (way.get(u) != null) {
             v = way.get(u);
-            System.out.printf("%s -> %s\n", v, u);
+            if (DO_DEBUG) System.out.printf("%s -> %s\n", v, u);
             this.vertices.get(v).getEdgeTo(u).bold = true;
             u = v;
             //result.add(0, u);
@@ -252,7 +253,7 @@ public class Navigation {
         while (way.get(u) != null) {
             // get the preceding node of the current node
             v = way.get(u);
-            System.out.printf("%s -> %s\n", v, u);
+            if (DO_DEBUG) System.out.printf("%s -> %s\n", v, u);
             // retrieve the edge connecting the preceding node (v) and the current node (u)
             Edge e = this.vertices.get(v).getEdgeTo(u);
             // map the edge to a distance
@@ -290,7 +291,7 @@ public class Navigation {
 	 *         returned.
 	 */
 	public ArrayList<String> findShortestRoute(String A, String B) {
-        System.out.printf("\n%s: shortest %s -> %s\n", this.filename, A, B);
+        if (DO_DEBUG) System.out.printf("\n%s: shortest %s -> %s\n", this.filename, A, B);
         Hashtable<String, String> vorgaenger;
         vorgaenger = dijkstra(A, new Edge.DistanceMapper());
 
@@ -321,7 +322,7 @@ public class Navigation {
 	 *         returned.
 	 */
 	public ArrayList<String> findFastestRoute(String A, String B) {
-        System.out.printf("\n%s: fastest %s -> %s\n", this.filename, A, B);
+        if (DO_DEBUG) System.out.printf("\n%s: fastest %s -> %s\n", this.filename, A, B);
         Hashtable<String, String> vorgaenger;
         vorgaenger = dijkstra(A, new Edge.SpeedMapper());
 
@@ -346,7 +347,7 @@ public class Navigation {
 	 *         B
 	 */
 	public int findShortestDistance(String A, String B) {
-        System.out.printf("\n%s: shortest %s -> %s\n", this.filename, A, B);
+        if (DO_DEBUG) System.out.printf("\n%s: shortest %s -> %s\n", this.filename, A, B);
         Hashtable<String, String> vorgaenger;
         vorgaenger = dijkstra(A, new Edge.DistanceMapper());
 
