@@ -14,7 +14,7 @@ public class Vertex {
     //private final Pattern dotPattern = Pattern.compile("^([A-Z]+): \\[label=\"([^\"]+)\"\\];$");
     private final Pattern dotPattern = Pattern.compile("^(\\w+) (\\[shape=([a-z]+)\\])?;$");
 
-    public String name, label, shape;
+    public String name, label, shape, style = null;
     public ArrayList<Edge> edgesFromHere = new ArrayList<>();
 
     public Vertex(String dot) throws Exception {
@@ -31,6 +31,10 @@ public class Vertex {
         shape = "circle";
     }
 
+    public void setAttributes(String shape, String style) {
+        this.shape = shape; this.style = style;
+    }
+
     /**
      * returns the edge from this vertex to another vertex determined by its name if any, null otherwise
      * @param vertexName  name of the destination vertex
@@ -43,9 +47,13 @@ public class Vertex {
         return null;
     }
 
+    public boolean hidden() {
+        return name.startsWith(".");
+    }
+
     @Override
     public String toString() {
-        return String.format("%s [shape=%s];", this.name, this.shape);
+        return String.format("%s [shape=%s]%s;", this.name, this.shape, this.style != null ? "[style="+this.style+"]" : "");
     }
 
     public String toDebugString() {
@@ -53,7 +61,7 @@ public class Vertex {
         for(Edge e: edgesFromHere) {
             edges += e.to + " ";
         }
-        return String.format("%s: [shape=%s][edgesFromHere=%s]", this.name, this.shape, edges);
+        return String.format("%s: [shape=%s][style=%s][edgesFromHere=%s]", this.name, this.shape, this.style, edges);
     }
 
 }

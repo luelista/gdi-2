@@ -19,6 +19,7 @@ public class Dotfile {
 
     public Hashtable<String, Vertex> vertices = new Hashtable<String, Vertex>();
     public ArrayList<Edge> edges = new ArrayList<Edge>();
+    public Hashtable<String, Edge> edgeHash = new Hashtable<>();
 
     public String filename;
 
@@ -50,7 +51,15 @@ public class Dotfile {
 
             if (line.contains("->")) { //parse edge
                 try {
-                    this.edges.add(new Edge(line));
+                    Edge e = new Edge(line);
+                    this.addEdge(e);
+
+                    Edge rev = new Edge(e.to, e.from, 0);
+                    this.addEdge(rev);
+
+                    e.reverse=rev;
+                    rev.reverse=e;
+
                 } catch (Exception e) {
                     throw new ParseException(lc, e.getMessage(), e);
                 }
@@ -65,10 +74,18 @@ public class Dotfile {
         }
 
         for (Edge e: this.edges) {
-            autocreateVertex(e.from);
-            autocreateVertex(e.to);
-            this.vertices.get(e.from).edgesFromHere.add(e);
         }
+    }
+
+    public void addEdge(Edge e) {
+        this.edges.add(e);
+        this.edgeHash.put(e.name(), e);
+        autocreateVertex(e.from);
+        autocreateVertex(e.to);
+        this.vertices.get(e.from).edgesFromHere.add(e);
+    }
+    public Edge getEdge(String name) {
+        return this.edgeHash.get(name);
     }
 
     private void autocreateVertex(String name) {
@@ -87,10 +104,10 @@ public class Dotfile {
         ArrayList<String> s = new ArrayList<>();
         s.add("Digraph {");
         for(Edge e:this.edges) {
-            s.add(e.toString());
+            if (e.fromFile) s.add(e.toString());
         }
         for(Vertex v:this.vertices.values()) {
-            s.add(v.toString());
+            if(!v.hidden()) s.add(v.toString());
         }
         s.add("}");
         return s;
