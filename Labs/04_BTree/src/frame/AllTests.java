@@ -26,8 +26,7 @@ import lab.B_Tree;
  *
  */
 public class AllTests{
-	@Rule
-	public Timeout globalTimeout = new Timeout(10000);
+	//@Rule public Timeout globalTimeout = new Timeout(10000);
 	
 	
     ArrayList<TestNode> nodes = new ArrayList<TestNode>();
@@ -202,6 +201,9 @@ public class AllTests{
 	}
 
  
+    
+    
+    //////////////////////////
     protected void testNode(String name, TestNode t, int n_e, int n_ch, String ent) {
         assertEquals("Number of entries of "+name+" not correct!", n_e, t.getEntries().size());
         assertEquals("Number of childen of "+name+" not correct!", n_ch, t.getChildren().size());
@@ -217,8 +219,10 @@ public class AllTests{
         return true;
     }
     
-    protected void parseB_Tree(ArrayList<String> output, int k) {
+    protected void parseB_Tree(ArrayList<String> output, int k, String name) {
+   	 
         int i=0;
+        int noChildren=0;
         String line;
         while (i<output.size()) {
             line = output.get(i);
@@ -230,17 +234,32 @@ public class AllTests{
             && !line.contains(DotFileConstants.DOT_FILE_SOURCE)) {
                 
                 //progress a node
-                if(line.contains(DotFileConstants.DOT_FILE_LABEL_START)) {
+                if(line.contains(DotFileConstants.DOT_FILE_LABEL_START)&&line.startsWith(name+"[")) {
                     progressNode(line, k);
                 }
                 //progress a pointer
-                else if(line.contains(DotFileConstants.DOT_FILE_EDGE)) {
+                else if(line.contains(DotFileConstants.DOT_FILE_EDGE)&&line.startsWith(name+":")) {
+                	noChildren++;
                     progressPointer(line);
                 }
             }
             i++;
         }
+        if(noChildren>0){
+        	String[] temp=new String[noChildren];
+        	int lastIndex=pointers.size()-1;
+        	for(int j=0;j<noChildren;j++){
+        		String[] p = pointers.get(lastIndex-j).split("->");
+                String number = ((p[0].split(":"))[1]).split("f")[1];
+        		int no=  new Integer(number);
+        		temp[no/2]=p[1];
+        	}
+        	for(int j=0;j<noChildren;j++){
+        		parseB_Tree(output,k, temp[j]);
+        	}
+        }
     }
+    
     
     protected void progressNode(String line, int k) {
         TestNode result = new TestNode(k);
@@ -265,7 +284,7 @@ public class AllTests{
     
     protected ArrayList<TestNode> constractB_Tree(ArrayList<String> output) {
         ArrayList<TestNode> r = new ArrayList<TestNode>();
-        parseB_Tree(output, 2);
+        parseB_Tree(output, 2, "root");
         Collections.sort(pointers);
         TestNode root = nodes.get(node_names.indexOf("root"));
         ArrayList<String> pts = new ArrayList<String>();

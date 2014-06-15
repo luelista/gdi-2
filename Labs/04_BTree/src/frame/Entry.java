@@ -56,7 +56,7 @@ public class Entry implements EntryInterface, Comparable<Entry> {
         
         return r;
     }
-    
+
     public int compareTo(Entry e) {
         return this.key.compareTo(e.getKey());
     }
