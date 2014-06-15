@@ -211,6 +211,7 @@ public class AllTests{
     }
     
     protected boolean testOrderOfEntries(ArrayList<Entry> e) {
+        System.out.println("testOrderOfEntries ("+e.size()+")");
         for(int i=0;i<e.size()-1;i++) {
             if(e.get(i).compareTo(e.get(i+1)) >= 0) {
                 return false;

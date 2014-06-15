@@ -9,6 +9,7 @@ import java.util.ArrayList;
  * @version 2014-05-21-001
  */
 public class Max {
+    public static boolean DEBUG = false;
 
     //join(String array,delimiter)
     public static String join(String r[],String d)
@@ -35,6 +36,14 @@ public class Max {
             builder.append(joint);
         }
         return builder.toString();
+    }
+
+    /**
+     * truncate a string to the maximum length
+     */
+    public static String truncstr(String str, int maxlen) {
+        return (str.length() > maxlen) ?
+                str.substring(0, maxlen) : str;
     }
 
     public static void main(String[] args) {

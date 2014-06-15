@@ -21,7 +21,7 @@ public class B_TreeNode {
     int maxDeg;
     public boolean leaf;
 
-    public int id;
+    public String id;
     private static int idCounter = 1000;
     /**
 	* The constructor
@@ -32,9 +32,11 @@ public class B_TreeNode {
 
     public B_TreeNode(int t) {
         maxDeg = t;
-        id = ++idCounter;
+        this.setId(++idCounter);
     }
-
+    public void setId(int idx) {
+        this.id = String.format("node%d", idx);
+    }
     public int getMaxDepth() {
         int dep = 0;
         for(B_TreeNode child : children)
@@ -58,7 +60,7 @@ public class B_TreeNode {
 
     //FIXME !!! should contain lots of off-by-ones
     public void splitChild(int index, B_TreeNode y) {
-        System.out.println("...splitChild "+index+", "+y);
+        if(Max.DEBUG)System.out.println("...splitChild "+index+", "+y);
         B_TreeNode z = new B_TreeNode(maxDeg);
         z.leaf = y.leaf;
         for(int i = maxDeg - 1; i > 0; i--) {
@@ -92,25 +94,38 @@ public class B_TreeNode {
         else
             return null;
     }
+    public void treeTraverse(ArrayList<Entry> list) {
+        int i = 0;
+        for(; i < this.entries.size(); i++) {
+            if (!leaf) {
+                this.child(i).treeTraverse(list);
+            }
+            list.add(this.entry(i));
+            System.out.println("traverse:"+this.entry(i));
+        }
+        if (!leaf)
+            this.child(i).treeTraverse(list);
+    }
 
 
     /**
      * convert to Dotfile representation
      *
      */
-    public String toDotRep() {
+    public String toDotRep(int label_maxlen) {
         int n = this.entries.size();
         String[] label = new String[n*2+1];
         for(int i = 0; i < n; i++)
-            label[i*2+1] = String.format("<s%d>%s", i, this.entry(i).toString());
+            label[i*2+1] = String.format("<f%d>%s",
+                    i*2+1, Max.truncstr(this.entry(i).getKey(), label_maxlen));
         if (leaf) {
             for (int i = 0; i < n + 1; i++)
-                label[i * 2] = String.format("<dummy%d>*", i);
+                label[i * 2] = String.format("<f%d>*", i*2);
         } else {
             for (int i = 0; i < n + 1; i++)
-                label[i * 2] = String.format("<ref%d>*", this.child(i).id);
+                label[i * 2] = String.format("<f%d>*", i*2);
         }
-        return String.format("node%d[label=\"%s\"];", this.id, Max.join(label, "|"));
+        return String.format("%s[label=\"%s\"];", this.id, Max.join(label, "|"));
     }
 
 

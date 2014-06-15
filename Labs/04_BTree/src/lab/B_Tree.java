@@ -25,6 +25,8 @@ public class B_Tree {
     B_TreeNode root;
     int minDeg;
 
+
+
     /**
 	 * The constructor
 	 *
@@ -86,30 +88,30 @@ public class B_Tree {
 
 
     public boolean insert(Entry insertEntry) {
-        System.out.println("");
+        if(Max.DEBUG)System.out.println("");
         if (root.entries.size() == 2*minDeg - 1) {
-            System.out.println("inserting : " + insertEntry + " \t splitting root("+root.entries.size()+")");
+            if(Max.DEBUG)System.out.println("inserting : " + insertEntry + " \t splitting root("+root.entries.size()+")");
             B_TreeNode s = new B_TreeNode(minDeg);
             s.leaf = false;
             s.children.add(this.root);
             s.splitChild(0, root);
-            System.out.println("---after split root---");
-            this.printNode(s);
+            if(Max.DEBUG)System.out.println("---after split root---");
+            if(Max.DEBUG)this.printNode(s);
             this.root = s;
-            System.out.println("---calling insertNonNull---");
+            if(Max.DEBUG)System.out.println("---calling insertNonNull---");
             this.insertNonfull(s, insertEntry);
         } else {
-            System.out.println("inserting : " + insertEntry + " \t below root("+root.entries.size()+")");
+            if(Max.DEBUG)System.out.println("inserting : " + insertEntry + " \t below root("+root.entries.size()+")");
             this.insertNonfull(this.root, insertEntry);
         }
-        System.out.println("After insert:");
-        printNode(root);
+        if(Max.DEBUG)System.out.println("After insert:");
+        if(Max.DEBUG)printNode(root);
         return true;
     }
 
     private boolean insertNonfull(B_TreeNode x, Entry k) {
         int i = x.entries.size() - 1;
-        System.out.println("insertNonfull " + x);
+        if(Max.DEBUG)System.out.println("insertNonfull " + x);
         if (x.leaf) {
             while (i >= 0 && k.compareTo(x.entry(i)) < 0) {
                 i = i - 1;
@@ -182,8 +184,15 @@ public class B_Tree {
      *
      * @return returns the output B-Tree in directly interpretable dot code
      */
-
     public ArrayList<String> getB_Tree() {
+        return getB_Tree_Cutted(Integer.MAX_VALUE);
+    }
+    public ArrayList<String> getB_Tree_Cutted(int label_maxlen) {
+        //pfff
+        numerateTree_counter = 0;
+        numerateTree(root);
+        root.id = "root";
+
         ArrayList<String> out =  new ArrayList<>();
         out.add("Digraph{");
         out.add("node[shape=record];");
@@ -194,19 +203,27 @@ public class B_Tree {
         while (!nodes.empty()) {
             B_TreeNode node = nodes.pop();
 
-            out.add(node.toDotRep());
+            out.add(node.toDotRep(label_maxlen));
 
-            for(B_TreeNode child : node.children) {
+            for(int i = 0; i < node.children.size(); i++) {
+                B_TreeNode child = node.child(i);
                 nodes.push(child);
-                out.add(String.format("node%d:ref%d->%1$d;",
-                        node.id, child.id));
+                out.add(String.format("%s:f%d->%s;",
+                        node.id, i*2, child.id));
             }
         }
 
         out.add("}");
         return out;
     }
+    int numerateTree_counter;
+    private void numerateTree(B_TreeNode el) {
+        for(B_TreeNode child:el.children) {
+            child.setId(++numerateTree_counter);
+            numerateTree(child);
+        }
 
+    }
     /**
 	 * This method returns the height of the B-Tree
      * If the B-Tree is empty this method should return 0.
@@ -219,7 +236,7 @@ public class B_Tree {
         if (root == null)
     	    return 0;
         else
-            return root.getMaxDepth();
+            return root.getMaxDepth() - 1;
     }
 
 
@@ -234,10 +251,10 @@ public class B_Tree {
 
     
     public ArrayList<Entry> getInorderTraversal() {
-        /**
-         * Add your code here
-    	   */
-    	return new ArrayList<>();
+        ArrayList<Entry> list = new ArrayList<>();
+        if (root != null)
+            root.treeTraverse(list);
+        return list;
     }
 
     /**
