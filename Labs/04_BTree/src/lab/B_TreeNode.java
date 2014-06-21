@@ -79,6 +79,14 @@ public class B_TreeNode {
 
     }
 
+    public Entry treeFindSmallest() {
+        if (leaf) return this.entry(0);
+        else return this.child(0).treeFindSmallest();
+    }
+    public Entry treeFindBiggest() {
+        if (leaf) return this.entry(this.entries.size()-1);
+        else return this.child(this.children.size()-1).treeFindBiggest();
+    }
     public Entry treeSearch(String key) {
         int i = 0;
         for(; i < this.entries.size(); i++) {
@@ -106,7 +114,108 @@ public class B_TreeNode {
         if (!leaf)
             this.child(i).treeTraverse(list);
     }
+    public Entry treeDeleteByKey(String key) {
+        int i = 0;
+        Entry deletedItem = null;
+        for(; i < this.entries.size(); i++) {
+            Entry e = this.entry(i);
+            int comp = e.getKey().compareTo(key);
+            if (!leaf && comp > 0) {
+                if (this.child(i).minimal()) {
+                    i+=this.balanceChild(i);
+                }
+                deletedItem = this.child(i).treeDeleteByKey(key);
+                if (deletedItem != null) break;
+            } else if (comp == 0) {
+                deletedItem = e;
 
+                if (leaf) {
+                    this.entries.remove(i);
+                } else {
+                    if (!this.child(i+1).minimal()) {
+                        //replace with successor
+                        Entry replacement = this.child(i+1).treeFindSmallest();
+                        this.child(i+1).treeDeleteByKey(replacement.getKey());
+
+                        this.entries.remove(i);
+                        this.entries.add(i, replacement);
+                    } else if (!this.child(i).minimal()) {
+                        //replace with predecessor
+                        Entry replacement = this.child(i).treeFindBiggest();
+                        this.child(i).treeDeleteByKey(replacement.getKey());
+
+                        this.entries.remove(i);
+                        this.entries.add(i, replacement);
+                    } else {
+                        //merge nodes
+                        mergeChildren(i, i+1);
+                        this.treeDeleteByKey(key);
+                    }
+                }
+
+                break;
+            }
+        }
+        if (!leaf && deletedItem == null && this.children.size()-1 >= i)
+            deletedItem = this.child(i).treeDeleteByKey(key);
+
+        return deletedItem;
+    }
+    public int balanceChild(int index) {
+        if (index > 0 && !this.child(index - 1).minimal()) {
+            //rotate with the left neighbor
+            B_TreeNode left = this.child(index - 1);
+            B_TreeNode right = this.child(index);
+
+            if (!left.leaf) {
+                right.children.add(0, left.child(left.children.size() - 1));
+                left.children.remove(left.children.size() - 1);
+            }
+
+            right.entries.add(0, entry(index));
+            entries.set(index, left.entry(left.entries.size()-1));
+            left.entries.remove(left.entries.size()-1);
+
+        } else if (index < this.children.size() - 1 && !this.child(index + 1).minimal()) {
+            //rotate with the right neighbor
+            B_TreeNode left = this.child(index);
+            B_TreeNode right = this.child(index + 1);
+
+            if (!left.leaf) {
+                left.children.add(right.child(0));
+                right.children.remove(0);
+            }
+
+            left.entries.add(this.entry(index));
+            this.entries.set(index, right.entry(0));
+            right.entries.remove(0);
+
+        } else if (index > 0) {
+            //merge with the left neighbor
+            mergeChildren(index - 1, index);
+            return -1;
+        } else {
+            // merge with the right neighbor
+            mergeChildren(index, index + 1);
+        }
+        return 0;
+    }
+    private void mergeChildren(int left, int right) {
+        B_TreeNode lnode = this.child(left);
+        B_TreeNode rnode = this.child(right);
+        Entry pivot = this.entry(left);
+        lnode.entries.add(pivot);
+        for(B_TreeNode child : rnode.children) lnode.children.add(child);
+        for(Entry item : rnode.entries) lnode.entries.add(item);
+        this.entries.remove(left);
+        this.children.remove(right);
+
+    }
+
+
+    public boolean minimal() {
+        return (this.entries.size() <= maxDeg-1);
+    }
 
     /**
      * convert to Dotfile representation

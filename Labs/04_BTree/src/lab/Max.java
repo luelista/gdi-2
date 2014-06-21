@@ -50,6 +50,10 @@ public class Max {
         B_Tree tree = new B_Tree(2);
         tree.constructB_TreeFromFile("TestFile.txt");
         System.out.println(Max.joinArrayListOfString("\n", tree.getB_Tree()));
+        System.out.println(tree.toString());
+        tree.delete("L2Z7499YH");
+        System.out.println(tree.toString());
+
     }
 
 }

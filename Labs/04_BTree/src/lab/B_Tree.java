@@ -88,30 +88,21 @@ public class B_Tree {
 
 
     public boolean insert(Entry insertEntry) {
-        if(Max.DEBUG)System.out.println("");
         if (root.entries.size() == 2*minDeg - 1) {
-            if(Max.DEBUG)System.out.println("inserting : " + insertEntry + " \t splitting root("+root.entries.size()+")");
             B_TreeNode s = new B_TreeNode(minDeg);
             s.leaf = false;
             s.children.add(this.root);
             s.splitChild(0, root);
-            if(Max.DEBUG)System.out.println("---after split root---");
-            if(Max.DEBUG)this.printNode(s);
             this.root = s;
-            if(Max.DEBUG)System.out.println("---calling insertNonNull---");
             this.insertNonfull(s, insertEntry);
         } else {
-            if(Max.DEBUG)System.out.println("inserting : " + insertEntry + " \t below root("+root.entries.size()+")");
             this.insertNonfull(this.root, insertEntry);
         }
-        if(Max.DEBUG)System.out.println("After insert:");
-        if(Max.DEBUG)printNode(root);
         return true;
     }
 
     private boolean insertNonfull(B_TreeNode x, Entry k) {
         int i = x.entries.size() - 1;
-        if(Max.DEBUG)System.out.println("insertNonfull " + x);
         if (x.leaf) {
             while (i >= 0 && k.compareTo(x.entry(i)) < 0) {
                 i = i - 1;
@@ -151,11 +142,20 @@ public class B_Tree {
 
 
     public Entry delete(String deleteKey) {
-        /**
-         * Add your code here
-    	 */
-    	return new Entry();
+        if (root == null) {
+            return null;
+        } else {
+            printNode(root);
+            System.out.println("Deleting "+deleteKey);
+            Entry deleted = root.treeDeleteByKey(deleteKey);
+            if (root.children.size() == 1) {
+                root = root.child(0);
+            }
+            printNode(root);
+            return deleted;
+        }
     }
+
 
     /**
 	 * This method searches in the B-Tree for the entry with key searchKey. It
@@ -275,40 +275,45 @@ public class B_Tree {
 
     @Override
     public String toString() {
-        return super.toString();
+        StringBuilder b = new StringBuilder();
+        if (this.root != null)
+            prn(this.root, "  ", b);
+        return "B_Tree(\n" + b.toString() + "\n)";
     }
 
     private Entry prnlast = null;
-    private void checkorder(String prefix , Entry o ) {
-        System.out.print(prefix + o);
+    private void checkorder(String prefix , Entry o , StringBuilder out) {
+        out.append(prefix + o);
         if (prnlast != null) {
             if (o.compareTo(prnlast) < 0) {
-                System.out.print(" \t !!!!! WRONG ORDER !!!!!");
+                out.append(" \t !!!!! WRONG ORDER !!!!!");
             }
         }
-        System.out.print("\n");
+        out.append("\n");
         prnlast = o;
     }
     private void printNode(B_TreeNode n) {
         prnlast = null;
-        prn(n, "#");
+        StringBuilder b = new StringBuilder();
+        prn(n, "#", b);
+        System.out.println(b.toString());
     }
-    private void prn(B_TreeNode n, String prefix) {
+    private void prn(B_TreeNode n, String prefix, StringBuilder out) {
         try {
-            System.out.println(prefix + "o " + n);
+            out.append(prefix + "o " + n + "\n");
             int i;
             if (n.leaf) {
                 for (i = 0; i < n.entries.size(); i++)
-                    checkorder(prefix + "   | ", n.entry(i));
+                    checkorder(prefix + "   | ", n.entry(i), out);
             } else {
                 for (i = 0; i < n.entries.size(); i++) {
-                    prn(n.child(i), prefix + "   ");
-                    checkorder(prefix + "   | ", n.entry(i));
+                    prn(n.child(i), prefix + "   ", out);
+                    checkorder(prefix + "   | ", n.entry(i), out);
                 }
-                prn(n.child(i), prefix + "   ");
+                prn(n.child(i), prefix + "   ", out);
             }
         } catch(Exception ex) {
-            System.out.println(prefix+"!!!!!!! "+ex.getMessage());
+            out.append(prefix + "!!!!!!! " + ex.getMessage() + "\n");
         }
     }
 }
