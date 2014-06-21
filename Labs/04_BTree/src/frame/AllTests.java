@@ -26,15 +26,16 @@ import lab.B_Tree;
  *
  */
 public class AllTests{
-	//@Rule public Timeout globalTimeout = new Timeout(10000);
-	
-	
+    @Rule
+    public Timeout globalTimeout = new Timeout(10000);
+
+
     ArrayList<TestNode> nodes = new ArrayList<TestNode>();
     ArrayList<String> node_names = new ArrayList<String>();
     ArrayList<String> pointers = new ArrayList<String>();
-    
-    
-    
+
+
+
     @Test public void testInsertFile1_NumberOfNodes() {
         B_Tree b = new B_Tree(2);
         b.constructB_TreeFromFile("TestFile.txt");
@@ -42,7 +43,7 @@ public class AllTests{
         ArrayList<TestNode> test_tree = this.constractB_Tree(out);
         assertEquals("Number of nodes not correct!", 14, test_tree.size());
     }
-    
+
     @Test public void testInsertFile1_HeightOfTree() {
         B_Tree b = new B_Tree(2);
         b.constructB_TreeFromFile("TestFile.txt");
@@ -50,7 +51,7 @@ public class AllTests{
         ArrayList<TestNode> test_tree = this.constractB_Tree(out);
         assertEquals("Height of the tree not correct!", 2, b.getB_TreeHeight());
     }
-    
+
     @Test public void testInsertFile1_NumberOfEntries() {
         B_Tree b = new B_Tree(2);
         b.constructB_TreeFromFile("TestFile.txt");
@@ -58,7 +59,7 @@ public class AllTests{
         ArrayList<TestNode> test_tree = this.constractB_Tree(out);
         assertEquals("Number of the entries is not correct!", 22, b.getB_TreeSize());
     }
-    
+
     @Test public void testInsertFile1_NodesOfTree() {
         B_Tree b = new B_Tree(2);
         b.constructB_TreeFromFile("TestFile.txt");
@@ -75,11 +76,11 @@ public class AllTests{
         testNode("node"+8, nodes.get(8), 1, 2, "NXM6F6UWJ");
         testNode("node"+9, nodes.get(9), 1, 0, "L2Z7499YH");
         testNode("node"+10, nodes.get(10), 1, 0, "OTYAH43JX");
-        testNode("node"+11, nodes.get(11), 1, 2, "W0KBB1RE7");  
+        testNode("node"+11, nodes.get(11), 1, 2, "W0KBB1RE7");
         testNode("node"+12, nodes.get(12), 3, 0, "TY4L8P0D3U36TUQ5NOVM22T8ESM");
         testNode("node"+13, nodes.get(13), 1, 0, "YMUEM9LVC");
     }
-    
+
     @Test public void testInsertFile1_InOrderTraversal() {
         B_Tree b = new B_Tree(2);
         b.constructB_TreeFromFile("TestFile.txt");
@@ -87,20 +88,20 @@ public class AllTests{
         ArrayList<TestNode> test_tree = this.constractB_Tree(out);
         assertTrue("getInorderTraversal() doesn't deliver entries in inorder traversal!", testOrderOfEntries(b.getInorderTraversal()));
     }
-    
+
     @Test public void testDeleteFile1_ReturnedEntries() {
         B_Tree b = new B_Tree(2);
         b.constructB_TreeFromFile("TestFile.txt");
         Entry e1 = b.delete("L2Z7499YH");
         Entry e2 = b.delete("FMF1QTZ0Q");
         Entry e3 = b.delete("L2Z74TZ0Q");
-        ArrayList<String> out = b.getB_Tree();      
+        ArrayList<String> out = b.getB_Tree();
         ArrayList<TestNode> test_tree = this.constractB_Tree(out);
         assertEquals("delete(L2Z7499YH) output not correct!", "L2Z74;99YH;Error", e1.toString());
         assertEquals("delete(FMF1QTZ0Q) output not correct!", "FMF1Q;TZ0Q;Error", e2.toString());
         assertTrue("delete(L2Z74TZ0Q) output not correct!", null == e3);
     }
-    
+
     @Test public void testDeleteFile1_NumberOfNodes() {
         B_Tree b = new B_Tree(2);
         b.constructB_TreeFromFile("TestFile.txt");
@@ -109,10 +110,10 @@ public class AllTests{
         Entry e3 = b.delete("L2Z74TZ0Q");
         ArrayList<String> out = b.getB_Tree();
         ArrayList<TestNode> test_tree = this.constractB_Tree(out);
-        
+
         assertEquals("Number of nodes not correct!", 12, test_tree.size());
     }
-    
+
     @Test public void testDeleteFile1_HeightOfTree() {
         B_Tree b = new B_Tree(2);
         b.constructB_TreeFromFile("TestFile.txt");
@@ -123,7 +124,7 @@ public class AllTests{
         ArrayList<TestNode> test_tree = this.constractB_Tree(out);
         assertEquals("Height of the tree not correct!", 2, b.getB_TreeHeight());
     }
-    
+
     @Test public void testDeleteFile1_NumberOfEntries() {
         B_Tree b = new B_Tree(2);
         b.constructB_TreeFromFile("TestFile.txt");
@@ -134,7 +135,7 @@ public class AllTests{
         ArrayList<TestNode> test_tree = this.constractB_Tree(out);
         assertEquals("Number of the entries is not correct!", 20, b.getB_TreeSize());
     }
-    
+
     @Test public void testDeleteFile1_NodesOfTree() {
         B_Tree b = new B_Tree(2);
         b.constructB_TreeFromFile("TestFile.txt");
@@ -143,20 +144,20 @@ public class AllTests{
         Entry e3 = b.delete("L2Z74TZ0Q");
         ArrayList<String> out = b.getB_Tree();
         ArrayList<TestNode> test_tree = this.constractB_Tree(out);
-        testNode("root", nodes.get(0), 2, 3, "E465LZPOESSG24YXB1");
-        testNode("node"+1, nodes.get(1), 2, 3, "4OVZBRS9F9BTCH8AHW");
+        testNode("root", nodes.get(0), 2, 3, "E465LZPOESSG24YXB1",2,3,"GFV8X4TT0SSG24YXB1");
+        testNode("node"+1, nodes.get(1), 2, 3, "4OVZBRS9F9BTCH8AHW",2, 3, "4OVZBRS9FDP56R7OTD");
         testNode("node"+2, nodes.get(2), 2, 0, "14ST01GLP319BCWVH9");
-        testNode("node"+3, nodes.get(3), 1, 0, "8ENSQEGV9");
-        testNode("node"+4, nodes.get(4), 1, 0, "DP56R7OTD");
+        testNode("node"+3, nodes.get(3), 1, 0, "8ENSQEGV9",2,0,"8ENSQEGV99BTCH8AHW");
+        testNode("node"+4, nodes.get(4), 1, 0, "DP56R7OTD", 1, 0, "E465LZPOE");
         testNode("node"+5, nodes.get(5), 2, 3, "IUS3K395WNXM6F6UWJ");
-        testNode("node"+6, nodes.get(6), 2, 0, "GFV8X4TT0HRR27B6JY");
+        testNode("node"+6, nodes.get(6), 2, 0, "GFV8X4TT0HRR27B6JY",1, 0, "HRR27B6JY");
         testNode("node"+7, nodes.get(7), 2, 0, "JZXHZFCB6KC83OJVA8");
         testNode("node"+8, nodes.get(8), 1, 0, "OTYAH43JX");
         testNode("node"+9, nodes.get(9), 1, 2, "W0KBB1RE7");
         testNode("node"+10, nodes.get(10), 3, 0, "TY4L8P0D3U36TUQ5NOVM22T8ESM");
         testNode("node"+11, nodes.get(11), 1, 0, "YMUEM9LVC");
     }
-    
+
     @Test public void testDeleteFile1_InOrderTraversal() {
         B_Tree b = new B_Tree(2);
         b.constructB_TreeFromFile("TestFile.txt");
@@ -165,10 +166,10 @@ public class AllTests{
         Entry e3 = b.delete("L2Z74TZ0Q");
         ArrayList<String> out = b.getB_Tree();
         ArrayList<TestNode> test_tree = this.constractB_Tree(out);
-        
+
         assertTrue("getInorderTraversal() doesn't deliver entries in inorder traversal!", testOrderOfEntries(b.getInorderTraversal()));
     }
-    
+
     @Test public void testfindFile1_ReturnedEntries() {
         B_Tree b = new B_Tree(2);
         b.constructB_TreeFromFile("TestFile.txt");
@@ -177,41 +178,48 @@ public class AllTests{
         assertEquals("find(SSG24YXB1) output not correct!", "SSG24;YXB1;Error", e1.toString());
         assertTrue("find(SSG27YXB1) output not correct!", null == e2);
     }
-  
-    
-
-	@Test public void testInsertFile1_Balanced() {
-		B_Tree b = new B_Tree(2);
-		b.constructB_TreeFromFile("TestFile.txt");
-		ArrayList<String> out = b.getB_Tree();
-		ArrayList<TestNode> test_tree = this.constractB_Tree(out);
-		assertTrue("The Tree is not balanced!", isBalanced(test_tree.get(0)));
-	}
 
 
-	@Test public void testDeleteFile1_Balanced() {
-		B_Tree b = new B_Tree(2);
-		b.constructB_TreeFromFile("TestFile.txt");
-		Entry e1 = b.delete("L2Z7499YH");
-		Entry e2 = b.delete("FMF1QTZ0Q");
-		Entry e3 = b.delete("L2Z74TZ0Q");
-		ArrayList<String> out = b.getB_Tree();
-		ArrayList<TestNode> test_tree = this.constractB_Tree(out);
-		assertTrue("The Tree is not balanced!", isBalanced(test_tree.get(0)));
-	}
 
- 
-    
-    
-    //////////////////////////
+    @Test public void testInsertFile1_Balanced() {
+        B_Tree b = new B_Tree(2);
+        b.constructB_TreeFromFile("TestFile.txt");
+        ArrayList<String> out = b.getB_Tree();
+        ArrayList<TestNode> test_tree = this.constractB_Tree(out);
+        assertTrue("The Tree is not balanced!", isBalanced(test_tree.get(0)));
+    }
+
+
+    @Test public void testDeleteFile1_Balanced() {
+        B_Tree b = new B_Tree(2);
+        b.constructB_TreeFromFile("TestFile.txt");
+        Entry e1 = b.delete("L2Z7499YH");
+        Entry e2 = b.delete("FMF1QTZ0Q");
+        Entry e3 = b.delete("L2Z74TZ0Q");
+        ArrayList<String> out = b.getB_Tree();
+        ArrayList<TestNode> test_tree = this.constractB_Tree(out);
+        assertTrue("The Tree is not balanced!", isBalanced(test_tree.get(0)));
+    }
+
+
     protected void testNode(String name, TestNode t, int n_e, int n_ch, String ent) {
         assertEquals("Number of entries of "+name+" not correct!", n_e, t.getEntries().size());
         assertEquals("Number of childen of "+name+" not correct!", n_ch, t.getChildren().size());
         assertEquals("Entries of "+name+" not correct!", ent, t.entriesToString());
     }
-    
+
+    protected void testNode(String name, TestNode t, int n_e, int n_ch, String ent, int n_e2, int n_ch2, String ent2) {
+        boolean t1=  (t.getEntries().size()== n_e || t.getEntries().size()== n_e2);
+        boolean t2= (t.getChildren().size()==n_ch || t.getChildren().size()==n_ch2);
+        boolean t3= (t.entriesToString().equalsIgnoreCase(ent)|| t.entriesToString().equalsIgnoreCase(ent2));
+
+        assertTrue("Number of entries of "+name+" not correct!", t1);
+        assertTrue("Number of childen of "+name+" not correct!", t2);
+        assertTrue("Entries of "+name+" not correct!", t3);
+
+    }
+
     protected boolean testOrderOfEntries(ArrayList<Entry> e) {
-        System.out.println("testOrderOfEntries ("+e.size()+")");
         for(int i=0;i<e.size()-1;i++) {
             if(e.get(i).compareTo(e.get(i+1)) >= 0) {
                 return false;
@@ -219,9 +227,9 @@ public class AllTests{
         }
         return true;
     }
-    
+
     protected void parseB_Tree(ArrayList<String> output, int k, String name) {
-   	 
+
         int i=0;
         int noChildren=0;
         String line;
@@ -231,37 +239,37 @@ public class AllTests{
              * in the line. "Digraph" is only contained in the first and
              * "}" only in the last line.*/
             if (!line.contains(DotFileConstants.DOT_FILE_DIGRAPH)
-            && !line.contains(DotFileConstants.DOT_FILE_CLOSE_BRACKET)
-            && !line.contains(DotFileConstants.DOT_FILE_SOURCE)) {
-                
+                    && !line.contains(DotFileConstants.DOT_FILE_CLOSE_BRACKET)
+                    && !line.contains(DotFileConstants.DOT_FILE_SOURCE)) {
+
                 //progress a node
                 if(line.contains(DotFileConstants.DOT_FILE_LABEL_START)&&line.startsWith(name+"[")) {
                     progressNode(line, k);
                 }
                 //progress a pointer
                 else if(line.contains(DotFileConstants.DOT_FILE_EDGE)&&line.startsWith(name+":")) {
-                	noChildren++;
+                    noChildren++;
                     progressPointer(line);
                 }
             }
             i++;
         }
         if(noChildren>0){
-        	String[] temp=new String[noChildren];
-        	int lastIndex=pointers.size()-1;
-        	for(int j=0;j<noChildren;j++){
-        		String[] p = pointers.get(lastIndex-j).split("->");
+            String[] temp=new String[noChildren];
+            int lastIndex=pointers.size()-1;
+            for(int j=0;j<noChildren;j++){
+                String[] p = pointers.get(lastIndex-j).split("->");
                 String number = ((p[0].split(":"))[1]).split("f")[1];
-        		int no=  new Integer(number);
-        		temp[no/2]=p[1];
-        	}
-        	for(int j=0;j<noChildren;j++){
-        		parseB_Tree(output,k, temp[j]);
-        	}
+                int no=  new Integer(number);
+                temp[no/2]=p[1];
+            }
+            for(int j=0;j<noChildren;j++){
+                parseB_Tree(output,k, temp[j]);
+            }
         }
     }
-    
-    
+
+
     protected void progressNode(String line, int k) {
         TestNode result = new TestNode(k);
         String[] names = line.split("\\[");
@@ -276,13 +284,13 @@ public class AllTests{
         node_names.add(names[0].trim());
         nodes.add(result);
     }
-    
+
     protected void progressPointer(String line) {
         String pointer = (line.split(";"))[0];
         pointers.add(pointer.trim());
     }
-    
-    
+
+
     protected ArrayList<TestNode> constractB_Tree(ArrayList<String> output) {
         ArrayList<TestNode> r = new ArrayList<TestNode>();
         parseB_Tree(output, 2, "root");
@@ -298,7 +306,7 @@ public class AllTests{
         for(int i=0;i<pts.size();i=i+2) {
             nodes.get(node_names.indexOf(pts.get(i))).addChild(nodes.get(node_names.indexOf(pts.get(i+1))));
         }
-        
+
         r.add(root);
         int i=0;
         while(i<r.size()) {
@@ -307,57 +315,58 @@ public class AllTests{
         }
         return r;
     }
-    
+
     private void printArrayList(ArrayList<String> dot) {
         try {
             FileWriter fw = new FileWriter("test.txt");
             BufferedWriter bw = new BufferedWriter(fw);
-            
+
             for (String string : dot) {
                 bw.write(string + System.getProperty("line.separator"));
+                System.out.println(string);
             }
-            
+
             bw.close();
             fw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
-
-	protected boolean isBalanced(TestNode t) {
-		return getBalancedHeight(t) > -1;
-	}
-
-	/**
-	 * @param t
-	 *            the root of the checked subtree
-	 * @return -1 if the subtree isnt balanced, and the height of the subtree,
-	 *         if it is.
-	 */
-	protected int getBalancedHeight(TestNode t) {
-		ArrayList<TestNode> children = t.getChildren();
-		if (children.isEmpty())
-			return 0;
-		int height = getBalancedHeight(children.get(0));
-		for (TestNode child : children) {
-			if (height != getBalancedHeight(child))
-				return -1;
-		}
-		return (height == -1) ? -1 : height + 1;
-	}
 
 
-    
+    protected boolean isBalanced(TestNode t) {
+        return getBalancedHeight(t) > -1;
+    }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    /**
+     * @param t
+     *            the root of the checked subtree
+     * @return -1 if the subtree isnt balanced, and the height of the subtree,
+     *         if it is.
+     */
+    protected int getBalancedHeight(TestNode t) {
+        ArrayList<TestNode> children = t.getChildren();
+        if (children.isEmpty())
+            return 0;
+        int height = getBalancedHeight(children.get(0));
+        for (TestNode child : children) {
+            if (height != getBalancedHeight(child))
+                return -1;
+        }
+        return (height == -1) ? -1 : height + 1;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
